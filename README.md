@@ -1,78 +1,148 @@
-\# SauceDemo Selenium C# NUnit Tests
+# EPAM .NET Automation Final Task
 
+## Project Description
 
+This project contains automated UI tests for the **SauceDemo** web application using **Selenium WebDriver**, **C#**, and **NUnit**.
 
-Automation project for testing https://www.saucedemo.com using Selenium WebDriver, C# and NUnit.
+The project follows the **Page Object Model (POM)** design pattern to improve code readability, maintainability, and reusability.
 
+**Application Under Test:**
 
+https://www.saucedemo.com/
 
-\## Test cases
+---
 
+## Technology Stack
 
+- C#
+- .NET 8
+- Selenium WebDriver
+- NUnit
+- ChromeDriver
+- FirefoxDriver
 
-\### UC-1 Login with only username
+---
 
-\- Enter username.
+## Project Structure
 
-\- Clear password.
+```
+AutomationFinalTask
+│
+├── Drivers
+│   └── DriverFactory.cs
+│
+├── Pages
+│   ├── InventoryPage.cs
+│   ├── LoginPage.cs
+│   └── ProductPage.cs
+│
+├── Tests
+│   ├── CartTests.cs
+│   └── LoginTests.cs
+│
+└── README.md
+```
 
-\- Click Login.
+---
 
-\- Verify "Password is required" message.
+## Test Cases
 
+### UC-1 - Login with Only Username
 
+**Objective**
 
-\### UC-2 Login with valid credentials
+Verify that the application displays an error message when the password field is empty.
 
-\- Login with standard user.
+**Test Steps**
 
-\- Verify inventory page elements:
+1. Open the SauceDemo application.
+2. Enter a valid username.
+3. Leave the password field empty.
+4. Click the **Login** button.
 
-&#x20; - Burger menu
+**Expected Result**
 
-&#x20; - Swag Labs label
+The application displays the following validation message:
 
-&#x20; - Shopping cart
+```
+Password is required
+```
 
-&#x20; - Sorting dropdown
+---
 
-&#x20; - Inventory items
+### UC-2 - Login with Valid Credentials
 
+**Objective**
 
+Verify that a registered user can log in successfully.
 
-\### UC-3 Add product to cart
+**Test Steps**
 
-\- Login with standard user.
+1. Open the SauceDemo application.
+2. Enter a valid username.
+3. Enter a valid password.
+4. Click the **Login** button.
 
-\- Open product details.
+**Expected Result**
 
-\- Add product to cart.
+The Inventory page is displayed successfully.
 
-\- Verify cart badge shows number of added products.
+The following elements should be visible:
 
+- Burger menu
+- Swag Labs logo
+- Shopping cart
+- Product sorting dropdown
+- Inventory items
 
+---
 
-\## Credentials
+### UC-3 - Add Product to Cart
 
+**Objective**
 
+Verify that a product can be added to the shopping cart.
 
-Username: standard\_user  
+**Test Steps**
 
-Password: secret\_sauce
+1. Log in with valid credentials.
+2. Open the first product.
+3. Click **Add to cart**.
 
+**Expected Result**
 
+The shopping cart badge displays:
 
-\## Tools
+```
+1
+```
 
+---
 
+## Test Credentials
 
-\- C#
+| Username | Password |
+|----------|----------|
+| standard_user | secret_sauce |
 
-\- Selenium WebDriver
+---
 
-\- NUnit
+## Design Pattern
 
-\- ChromeDriver
+This project follows the **Page Object Model (POM)** pattern.
 
-\- FirefoxDriver
+The Page Object Model separates:
 
+- Test logic
+- Page elements
+- User actions
+
+This makes the automation framework easier to maintain and extend.
+
+---
+
+## Author
+
+Carlos Eduardo Correa Brito
+
+EPAM .NET Automation Final Task
