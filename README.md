@@ -78,40 +78,6 @@ Example:
 }
 ```
 
-You can also override settings with environment variables using the `TA_` prefix:
-
-```powershell
-$env:TA_Browser="firefox"
-$env:TA_Headless="true"
-dotnet test
-```
-
-## How to Run
-
-Restore dependencies:
-
-```bash
-dotnet restore
-```
-
-Run all tests:
-
-```bash
-dotnet test
-```
-
-Run using Chrome:
-
-```bash
-TA_Browser=chrome dotnet test
-```
-
-Run using Firefox:
-
-```bash
-TA_Browser=firefox dotnet test
-```
-
 ## Notes about the Evaluation Criteria
 
 - Browser driver implementation uses the Factory pattern.
