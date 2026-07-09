@@ -1,78 +1,122 @@
-\# SauceDemo Selenium C# NUnit Tests
+# SauceDemo Selenium C# NUnit Tests
 
+Automation project for testing [SauceDemo](https://www.saucedemo.com) using Selenium WebDriver, C# and NUnit.
 
+## Architecture
 
-Automation project for testing https://www.saucedemo.com using Selenium WebDriver, C# and NUnit.
+The project uses **Page Object Model (POM)** and a basic **Factory + Singleton Driver Manager** structure.
 
+- `Pages`: page objects with locators and user actions.
+- `Drivers`: browser creation and driver lifecycle management.
+- `Config`: app settings and browser configuration.
+- `Tests`: NUnit test cases.
+- `log4net.config`: console and file logging.
 
+## Test cases
 
-\## Test cases
+### UC-1 Login with only username
 
+- Open login page.
+- Enter username.
+- Leave password empty.
+- Click Login.
+- Verify the `Password is required` error message.
 
+### UC-2 Login with valid credentials
 
-\### UC-1 Login with only username
+- Login with standard user.
+- Verify inventory page elements:
+  - Burger menu
+  - Swag Labs label
+  - Shopping cart
+  - Sorting dropdown
+  - Inventory items
 
-\- Enter username.
+### UC-3 Add product to cart
 
-\- Clear password.
+- Login with standard user.
+- Validate inventory page is loaded.
+- Sort products by price from low to high.
+- Open the first product.
+- Add product to cart.
+- Verify the cart badge shows `1`.
 
-\- Click Login.
+## Credentials
 
-\- Verify "Password is required" message.
+```text
+Username: standard_user
+Password: secret_sauce
+```
 
+## Tools
 
+- C#
+- .NET 8
+- Selenium WebDriver
+- Selenium Support / WebDriverWait
+- NUnit
+- ChromeDriver
+- GeckoDriver
+- log4net
 
-\### UC-2 Login with valid credentials
+## Configuration
 
-\- Login with standard user.
+Default configuration is in:
 
-\- Verify inventory page elements:
+```text
+AutomationFinalTask/appsettings.json
+```
 
-&#x20; - Burger menu
+Example:
 
-&#x20; - Swag Labs label
+```json
+{
+  "BaseUrl": "https://www.saucedemo.com",
+  "Browser": "chrome",
+  "TimeoutSeconds": 10,
+  "Headless": false
+}
+```
 
-&#x20; - Shopping cart
+You can also override settings with environment variables using the `TA_` prefix:
 
-&#x20; - Sorting dropdown
+```powershell
+$env:TA_Browser="firefox"
+$env:TA_Headless="true"
+dotnet test
+```
 
-&#x20; - Inventory items
+## How to run
 
+Restore dependencies:
 
+```bash
+dotnet restore
+```
 
-\### UC-3 Add product to cart
+Run all tests:
 
-\- Login with standard user.
+```bash
+dotnet test
+```
 
-\- Open product details.
+Run using Chrome:
 
-\- Add product to cart.
+```bash
+TA_Browser=chrome dotnet test
+```
 
-\- Verify cart badge shows number of added products.
+Run using Firefox:
 
+```bash
+TA_Browser=firefox dotnet test
+```
 
+## Notes about the evaluation criteria
 
-\## Credentials
-
-
-
-Username: standard\_user  
-
-Password: secret\_sauce
-
-
-
-\## Tools
-
-
-
-\- C#
-
-\- Selenium WebDriver
-
-\- NUnit
-
-\- ChromeDriver
-
-\- FirefoxDriver
-
+- Browser driver implementation uses Factory pattern.
+- Driver lifecycle is managed by a Singleton `DriverManager`.
+- POM is implemented with one class per page.
+- Locators use stable IDs, CSS selectors and class names.
+- Explicit waits are centralized in `BasePage`.
+- Logging is implemented with log4net.

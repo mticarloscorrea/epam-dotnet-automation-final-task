@@ -1,102 +1,63 @@
-﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AutomationFinalTask.Config;
 using OpenQA.Selenium;
 
-namespace AutomationFinalTask.Pages
+namespace AutomationFinalTask.Pages;
+
+public class LoginPage : BasePage
 {
-    public class LoginPage
+    private static readonly By UsernameInput = By.Id("user-name");
+    private static readonly By PasswordInput = By.Id("password");
+    private static readonly By LoginButton = By.Id("login-button");
+    private static readonly By ErrorMessage = By.CssSelector("[data-test='error']");
+
+    public LoginPage(IWebDriver driver) : base(driver)
     {
-        // Variable privada que almacena la instancia del navegador
-        // (Chrome, Firefox, Edge, etc.).
-        // readonly significa que solo puede asignarse una vez en el constructor.
-        private readonly IWebDriver _driver;
+    }
 
-        // Constructor de la clase.
-        // Recibe el navegador creado previamente y lo guarda
-        // para utilizarlo en todos los métodos de esta página.
-        public LoginPage(IWebDriver driver)
+    public void Open()
+    {
+        Driver.Navigate().GoToUrl(SettingsProvider.Settings.BaseUrl);
+        FindVisible(UsernameInput);
+    }
+
+    public void Login(string username, string password)
+    {
+        Type(UsernameInput, username);
+        Type(PasswordInput, password);
+        Click(LoginButton);
+        ClosePasswordChangeAlertIfExists();
+    }
+
+
+
+    public void ClosePasswordChangeAlertIfExists()
+    {
+        try
         {
-            _driver = driver;
+            var buttons = Driver.FindElements(By.CssSelector("button,a,input[type='button'],input[type='submit']"));
+            foreach (var b in buttons)
+            {
+                var t=(b.Text??"").Trim().ToLowerInvariant();
+                if(!b.Displayed) continue;
+                if(t.Contains("skip")||t.Contains("later")||t.Contains("cancel")||t.Contains("omit")||t.Contains("después")||t.Contains("despues")||t.Contains("cancelar"))
+                {
+                    b.Click();
+                    break;
+                }
+            }
         }
+        catch{}
+    }
 
-        // ============================
-        // Elementos de la página
-        // ============================
+    public void LoginOnlyUsername(string username)
+    {
+        Type(UsernameInput, username);
+        Type(PasswordInput, string.Empty);
+        Click(LoginButton);
+    }
 
-        // Obtiene el campo de texto "Username".
-        // Busca el elemento cuyo id es "user-name".
-        private IWebElement Username => _driver.FindElement(By.Id("user-name"));
-
-        // Obtiene el campo de texto "Password".
-        private IWebElement Password => _driver.FindElement(By.Id("password"));
-
-        // Obtiene el botón "Login".
-        private IWebElement LoginButton => _driver.FindElement(By.Id("login-button"));
-
-        // Obtiene el mensaje de error que aparece cuando el login falla.
-        // Se localiza utilizando un selector CSS.
-        private IWebElement ErrorMessage => _driver.FindElement(By.CssSelector("[data-test='error']"));
-
-        // ============================
-        // Métodos de la página
-        // ============================
-
-        // Abre la página principal de SauceDemo.
-        public void Open()
-        {
-            _driver.Navigate().GoToUrl("https://www.saucedemo.com");
-        }
-
-        // Realiza un inicio de sesión válido.
-        // Parámetros:
-        // username -> usuario que se escribirá.
-        // password -> contraseña que se escribirá.
-        public void Login(string username, string password)
-        {
-            // Limpia el campo usuario por si contiene información previa.
-            Username.Clear();
-
-            // Escribe el nombre de usuario.
-            Username.SendKeys(username);
-
-            // Limpia el campo contraseña.
-            Password.Clear();
-
-            // Escribe la contraseña.
-            Password.SendKeys(password);
-
-            // Hace clic en el botón Login.
-            LoginButton.Click();
-        }
-
-        // Caso especial utilizado para validar el mensaje
-        // "Password is required".
-        // Solo escribe el usuario y deja la contraseña vacía.
-        public void LoginOnlyUsername(string username)
-        {
-            // Limpia el campo usuario.
-            Username.Clear();
-
-            // Escribe el usuario.
-            Username.SendKeys(username);
-
-            // Limpia la contraseña para dejarla vacía.
-            Password.Clear();
-
-            // Hace clic en Login.
-            LoginButton.Click();
-        }
-
-        // Devuelve el texto del mensaje de error mostrado en pantalla.
-        // Este método será utilizado por los casos de prueba para verificar
-        // que el mensaje sea el esperado.
-        public string GetErrorMessage()
-        {
-            return ErrorMessage.Text;
-        }
+    public string GetErrorMessage()
+    {
+        return FindVisible(ErrorMessage).Text;
     }
 }

@@ -1,57 +1,70 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
+using AutomationFinalTask.Config;
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 
-namespace AutomationFinalTask.Drivers
+namespace AutomationFinalTask.Drivers;
+
+public static class DriverFactory
 {
-
-    // Se declara una clase estática.
-    // - Sus métodos pueden llamarse directamente.
-    // Ejemplo:
-    // IWebDriver driver = DriverFactory.CreateDriver("chrome");
-    public static class DriverFactory
+    public static IWebDriver CreateDriver(string browserName, bool headless = false)
     {
-        // Método público y estático.
-        //
-        // Recibe como parámetro el nombre del navegador ("chrome", "firefox", etc.)
-        // y devuelve un objeto que implementa la interfaz IWebDriver.
-        //
-        // IWebDriver es la interfaz principal de Selenium que permite:
-        // - Abrir páginas web.
-        // - Buscar elementos.
-        // - Dar clic.
-        // - Escribir texto.
-        // - Obtener información de la página.
-        public static IWebDriver CreateDriver(string browser)
+        var browser = ParseBrowser(browserName);
+
+        return browser switch
         {
-            // Convierte el texto recibido a minúsculas para evitar problemas.
-       
-            // Así evitamos errores por diferencias entre mayúsculas y minúsculas.
-            if (browser.ToLower() == "firefox")
+            BrowserType.Firefox => CreateFirefoxDriver(headless),
+            BrowserType.Edge => CreateEdgeDriver(headless),
+            _ => CreateChromeDriver(headless)
+        };
+    }
 
-                // Si el usuario indicó Firefox,
-                // se crea una nueva instancia del navegador Firefox
-                // y se devuelve como IWebDriver.
-                return new FirefoxDriver();
+    private static BrowserType ParseBrowser(string browserName)
+    {
+        return Enum.TryParse(browserName, ignoreCase: true, out BrowserType browser)
+            ? browser
+            : BrowserType.Chrome;
+    }
 
-            // Si el navegador no es Firefox,
-            // por defecto se abre Google Chrome.
-            //
-            // Esto significa que si llamamos:
-            //
-            // DriverFactory.CreateDriver("chrome");
-            //
-            // o incluso
-            //
-            // DriverFactory.CreateDriver("cualquier cosa");
-            //
-            // el método abrirá Chrome.
-            return new ChromeDriver();
+    private static IWebDriver CreateChromeDriver(bool headless)
+    {
+        var options = new ChromeOptions();
+        options.AddArgument("--start-maximized");
+        options.AddArgument("--disable-notifications");
+
+        if (headless)
+        {
+            options.AddArgument("--headless=new");
+            options.AddArgument("--window-size=1920,1080");
         }
+
+        return new ChromeDriver(options);
+    }
+
+    private static IWebDriver CreateFirefoxDriver(bool headless)
+    {
+        var options = new FirefoxOptions();
+
+        if (headless)
+        {
+            options.AddArgument("--headless");
+        }
+
+        return new FirefoxDriver(options);
+    }
+
+    private static IWebDriver CreateEdgeDriver(bool headless)
+    {
+        var options = new EdgeOptions();
+        options.AddArgument("--start-maximized");
+
+        if (headless)
+        {
+            options.AddArgument("--headless=new");
+            options.AddArgument("--window-size=1920,1080");
+        }
+
+        return new EdgeDriver(options);
     }
 }

@@ -1,104 +1,48 @@
-﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-// Importa las clases principales de Selenium.
-// Permite utilizar IWebDriver, IWebElement, By, FindElement(), etc.
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
-namespace AutomationFinalTask.Pages
+namespace AutomationFinalTask.Pages;
+
+public class InventoryPage : BasePage
 {
+    private static readonly By BurgerMenuButton = By.Id("react-burger-menu-btn");
+    private static readonly By AppLogo = By.ClassName("app_logo");
+    private static readonly By CartLink = By.ClassName("shopping_cart_link");
+    private static readonly By SortDropdown = By.ClassName("product_sort_container");
+    private static readonly By InventoryItems = By.ClassName("inventory_item");
+    private static readonly By FirstProductName = By.CssSelector(".inventory_item_name");
 
-
-    // Esta clase representa la página de inventario de SauceDemo.
-    // Es la página que aparece después de iniciar sesión correctamente.
-    //
-    // Sigue el patrón Page Object Model (POM), donde cada página
-    // del sistema se representa mediante una clase.
-    public class InventoryPage
+    public InventoryPage(IWebDriver driver) : base(driver)
     {
-        // Variable privada que almacena la instancia del navegador.
-        // readonly indica que solo puede asignarse una vez
-        // dentro del constructor.
-        private readonly IWebDriver _driver;
+    }
 
-        // Constructor de la clase.
-        // Recibe el navegador creado previamente y lo guarda
-        // para que todos los métodos puedan utilizarlo.
-        public InventoryPage(IWebDriver driver)
-        {
-            _driver = driver;
-        }
+    public bool IsLoaded()
+    {
+        return FindVisible(BurgerMenuButton).Displayed
+               && FindVisible(AppLogo).Text == "Swag Labs"
+               && FindVisible(CartLink).Displayed
+               && FindVisible(SortDropdown).Displayed
+               && HasInventoryItems();
+    }
 
-        // ==================================
-        // Métodos de validación de la página
-        // ==================================
+    public bool IsBurgerMenuDisplayed() => FindVisible(BurgerMenuButton).Displayed;
 
-        // Verifica que el botón del menú lateral (hamburguesa)
-        // esté visible en la página.
-        //
-        // Devuelve:
-        // true  -> si el botón existe y es visible.
-        // false -> si no está visible.
-        public bool IsBurgerMenuDisplayed() =>
-            _driver.FindElement(By.Id("react-burger-menu-btn")).Displayed;
+    public bool IsLogoDisplayed() => FindVisible(AppLogo).Text == "Swag Labs";
 
-        // Verifica que el logotipo de la aplicación sea "Swag Labs".
-        //
-        // Busca el elemento con la clase "app_logo"
-        // y compara el texto mostrado.
-        //
-        // Devuelve true únicamente si el texto es exactamente
-        // "Swag Labs".
-        public bool IsLogoDisplayed() =>
-            _driver.FindElement(By.ClassName("app_logo")).Text == "Swag Labs";
+    public bool IsCartDisplayed() => FindVisible(CartLink).Displayed;
 
-        // Verifica que el ícono del carrito de compras
-        // esté visible en la pantalla.
-        //
-        // Devuelve:
-        // true  -> si el carrito existe.
-        // false -> si no existe.
-        public bool IsCartDisplayed() =>
-            _driver.FindElement(By.ClassName("shopping_cart_link")).Displayed;
+    public bool IsSortDropdownDisplayed() => FindVisible(SortDropdown).Displayed;
 
-        // Verifica que el combo para ordenar productos
-        // (Nombre A-Z, Precio, etc.) esté visible.
-        //
-        // Devuelve true cuando el control existe
-        // y puede visualizarse.
-        public bool IsSortDropdownDisplayed() =>
-            _driver.FindElement(By.ClassName("product_sort_container")).Displayed;
+    public bool HasInventoryItems() => FindAll(InventoryItems).Count > 0;
 
-        // Verifica que existan productos en el inventario.
-        //
-        // FindElements() devuelve una lista de elementos.
-        // Count obtiene la cantidad encontrada.
-        //
-        // Si la cantidad es mayor que cero,
-        // significa que la página cargó correctamente
-        // y existen productos disponibles.
-        public bool HasInventoryItems() =>
-            _driver.FindElements(By.ClassName("inventory_item")).Count > 0;
+    public void SortByPriceLowToHigh()
+    {
+        var select = new SelectElement(FindVisible(SortDropdown));
+        select.SelectByValue("lohi");
+    }
 
-        // ==================================
-        // Acciones sobre la página
-        // ==================================
-
-        // Abre el primer producto de la lista.
-        //
-        // FindElements() obtiene todos los nombres
-        // de los productos.
-        //
-        // [0] representa el primer elemento de la colección,
-        // ya que los índices en C# comienzan en cero.
-        //
-        // Finalmente realiza un clic sobre dicho producto.
-        public void OpenFirstProduct()
-        {
-            _driver.FindElements(By.ClassName("inventory_item_name"))[0].Click();
-        }
+    public void OpenFirstProduct()
+    {
+        FindAll(FirstProductName).First().Click();
     }
 }
