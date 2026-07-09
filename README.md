@@ -12,7 +12,7 @@ The project uses **Page Object Model (POM)** and a basic **Factory + Singleton D
 - `Tests`: NUnit test cases.
 - `log4net.config`: console and file logging.
 
-## Test cases
+## Test Cases
 
 ### UC-1 Login with only username
 
@@ -86,7 +86,7 @@ $env:TA_Headless="true"
 dotnet test
 ```
 
-## How to run
+## How to Run
 
 Restore dependencies:
 
@@ -112,11 +112,17 @@ Run using Firefox:
 TA_Browser=firefox dotnet test
 ```
 
-## Notes about the evaluation criteria
+## Notes about the Evaluation Criteria
 
-- Browser driver implementation uses Factory pattern.
+- Browser driver implementation uses the Factory pattern.
 - Driver lifecycle is managed by a Singleton `DriverManager`.
 - POM is implemented with one class per page.
 - Locators use stable IDs, CSS selectors and class names.
 - Explicit waits are centralized in `BasePage`.
 - Logging is implemented with log4net.
+
+## Author
+
+Carlos Eduardo Correa Brito
+
+EPAM .NET Automation Final Task
